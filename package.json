@@ -1,0 +1,19 @@
+{
+  "name": "tretyakov-tests",
+  "version": "1.0.0",
+  "description": "Автотесты для Третьяковской галереи",
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:debug": "playwright test --debug",
+    "allure:generate": "npx allure-commandline generate allure-results --clean",
+    "allure:open": "npx allure-commandline open allure-report"
+  },
+  "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.59.1",
+    "@types/node": "^25.5.2",
+    "allure-commandline": "^2.38.1",
+    "allure-playwright": "^3.7.0"
+  }
+}
