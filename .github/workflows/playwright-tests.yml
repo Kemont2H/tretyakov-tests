@@ -1,38 +1,64 @@
+# Имя workflow - отображается вкладке Actions
 name: Playwright Tests - Tretyakov Gallery
 
+# Триггеры - когда запускать этот workflow
 on:
+  # Ручной запуск (кнопка "Run workflow" в интерфейсе GitHub)
   workflow_dispatch:
+
+  # Автоматический запуск по расписанию
   schedule:
-    - cron: '0 0 * * *'
+    - cron: '0 0 * * *'  # Cron синтаксис: каждую полночь
 
+# Права доступа для GitHub Actions
 permissions:
-  contents: write
+  contents: write  # Разрешаем запись в репозиторий (для деплоя на gh-pages)
 
+# Что будет выполняться
 jobs:
+  # Название джобы
   test:
-    runs-on: ubuntu-latest
+    # На какой операционной системе запускать
+    runs-on: ubuntu-latest  # Ubuntu (Linux) - самая популярная для CI/CD
+
+    # Шаги - последовательность команд
     steps:
-      - uses: actions/checkout@v4
+      # Шаг 1: Клонируем репозиторий
+      - name: Checkout repository
+        uses: actions/checkout@v4  # Готовое действие от GitHub
         with:
-          fetch-depth: 0
-      
+          fetch-depth: 0  # Загружаем всю историю (нужно для Allure history)
+
+      # Шаг 2: Устанавливаем Node.js
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
-      
-      - run: npm ci
+          node-version: '20'  # Версия Node.js
+
+      # Шаг 3: Устанавливаем зависимости из package.json
+      - run: npm ci  # "ci" - clean install, быстрее и надежнее чем npm install
+
+      # Шаг 4: Устанавливаем allure-playwright
       - run: npm install --save-dev allure-playwright
+
+      # Шаг 5: Устанавливаем браузеры Playwright
       - run: npx playwright install chromium
+
+      # Шаг 6: Запускаем тесты
       - run: npx playwright test || true
-      
+        # "|| true" означает: даже если тесты упали - продолжай выполнение
+
+      # Шаг 7: Генерируем Allure отчет
       - name: Generate Allure Report
         run: |
+          # Устанавливаем allure-commandline глобально
           npm install -g allure-commandline
+          # Генерируем отчет из папки allure-results в папку allure-report
           allure generate allure-results --clean -o allure-report
-      
+
+      # Шаг 8: Публикуем на GitHub Pages
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./allure-report
-          keep_files: true
+          github_token: ${{ secrets.GITHUB_TOKEN }}  # Токен для доступа (GitHub создает автоматически)
+          publish_dir: ./allure-report  # Какую папку опубликовать
+          keep_files: true  # Не удалять старые файлы (сохраняем историю)
