@@ -12,3 +12,8 @@
 npm install
 npx playwright install
 npm test
+
+## + Добавил сюда CI/CD - Настройку GitHub Actions
+- ручной запуск автотестов
+- автоматический по расписанию в полночь
+- публикация allure с историей на GitHub Pages
